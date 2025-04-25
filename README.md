@@ -91,6 +91,7 @@ DeviceLogonEvents
 
 ![Screenshot 2025-04-17 221506](https://github.com/user-attachments/assets/2187203f-3501-4c68-9caf-50fbf01da626)
 
+![Screenshot 2025-04-17 221543](https://github.com/user-attachments/assets/e6064cc1-e1b3-4518-84b1-f1e11a2ae4cd)
 
 ![Screenshot 2025-04-17 221731](https://github.com/user-attachments/assets/b2173f6d-dfb9-42eb-9686-f131d2e4f242)
 

@@ -57,11 +57,15 @@ DeviceLogonEvents
 | where NumberOfFailures >= 10
 ```
 
+![Screenshot 2025-04-17 220215](https://github.com/user-attachments/assets/9ac1d292-5a97-4f41-b2a9-b3c9fa5b7d56)
+
+
+
 #### 🗛️ Key Findings
 
 | Remote IP         | Action Type | Device Name                                                           | Event Count |
 |------------------|-------------|------------------------------------------------------------------------|-------------|
-| 170.64.231.251   | LogonFailed | linux-vm-sam.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net       | 102         |
+| 170.64.231.251   | LogonFailed | linux-vm-sam.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net       | 101         |
 | 10.0.0.8         | LogonFailed | linux-vm-scan-lab-test-marvin.p2zfvso05mlezjev3ck4vqd3kd.cx.internal   | 101         |
 | 170.64.231.251   | LogonFailed | slremnuxmain3.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net      | 101         |
 | 128.199.21.114   | LogonFailed | slremnuxmain3.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net      | 100         |
@@ -80,17 +84,46 @@ DeviceLogonEvents
 | where RemoteIP in ("170.64.231.251", "10.0.0.8", "128.199.21.114", "95.143.191.159", "45.92.177.109", "4.240.63.212")
 | where ActionType == "LogonSuccess"
 ```
+![image](https://github.com/user-attachments/assets/6e38269c-cabe-47b3-bdfb-8e7e635e6159)
+
 
 **📌 Result**: Successful logons were found from some IPs involved in the brute force attempts, confirming **partial compromise risk**.
+
+![Screenshot 2025-04-17 221506](https://github.com/user-attachments/assets/2187203f-3501-4c68-9caf-50fbf01da626)
+
+
+![Screenshot 2025-04-17 221731](https://github.com/user-attachments/assets/b2173f6d-dfb9-42eb-9686-f131d2e4f242)
+
+
+```kql
+DeviceLogonEvents
+| where ActionType == "LogonSuccess"
+| where DeviceName in ("linux-vm-sam.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net", "linux-vm-scan-lab-test-marvin.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net", "slremnuxmain3.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net", "slremnuxmain3.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net", "onbourding1", "danielle-linux-vm1.p2zfvso05mlezjev3ck4vqd3kd.cx.internal.cloudapp.net", "edr-russo", "mde-ron", "windowsservervm", "britt-windows10", "vm-final-projec"
+    ) and RemoteIP in("170.64.231.251", "10.0.0.8", "170.64.231.251", "128.199.21.114", "95.143.191.159", "10.0.0.8", "45.92.177.109", "45.92.177.109", "10.0.0.8", "4.240.63.212", "10.0.0.8")
+| summarize EventCount = count() by RemoteIP, ActionType, DeviceName 
+| order by EventCount desc 
+```
+
+![Screenshot 2025-04-17 225343](https://github.com/user-attachments/assets/c5adf8d3-808b-4296-ab9c-4dc424dd4d7b)
+
+
 
 ---
 
 ### 🛡️ 3. Containment
 
-- **Device Isolation**: Affected VMs were isolated using Microsoft Defender for Endpoint.  
+- **Device Isolation**: Affected VMs were isolated using Microsoft Defender for Endpoint.
+  ![Screenshot 2025-04-17 222739](https://github.com/user-attachments/assets/44a9d6b0-4ef7-4e34-a5d5-7f9d784ba152)
+
+
+![Screenshot 2025-04-17 222803](https://github.com/user-attachments/assets/a159b2e9-f5c4-447e-91e6-521783887b8e)
+
+ 
 - **NSG Updates**:
   - Blocked RDP access from public internet.
   - RDP access restricted to analyst's home IP.
+    ![Screenshot 2025-04-17 225804](https://github.com/user-attachments/assets/e6634f78-1b58-4aa2-8475-4b57676e2af0)
+
 
 **Policy Proposal**:
 - Enforce private RDP access across all VMs.
@@ -128,12 +161,18 @@ DeviceLogonEvents
 2. Select your **Sentinel Workspace**.
 3. Navigate to **Configuration > Analytics**.
 4. Click **Create ➕ > Scheduled Query Rule**.
-5. Fill in rule details:
+   ![Screenshot 2025-04-17 220221](https://github.com/user-attachments/assets/c2fdce15-fdde-401e-aa51-9b3187e1dfa7)
 
-   - **Name**: 🔥 *Brute Force Attack Detection - Azure VMs*
-   - **Description**: Identifies 10+ failed login attempts from the same IP within 5 hours.
-   - **Severity**: 🚨 High
+6. Fill in rule details:
+![Screenshot 2025-04-17 220659](https://github.com/user-attachments/assets/b23b9400-b2f7-4286-9d5d-61a6a80c73c4)
+
+   - **Name**: 🔥 *Yusuf- Create-rule alert (Brute Force Attemp Detection) *
+   - **Description**: Identifies 50+ failed login attempts from the same IP within 5 hours.
+   - **Severity**: 🚨 Medium 
    - **MITRE ATT&CK Tactics**: 🎯 Initial Access, 🔑 Credential Access
+  ![Screenshot 2025-04-17 221219](https://github.com/user-attachments/assets/2bfdebc6-8dcd-47a3-9c7b-b37913c5b49e)
+![Screenshot 2025-04-17 221304](https://github.com/user-attachments/assets/c607319f-68a9-4410-b686-72cc4ea45cf0)
+
 
 ---
 
